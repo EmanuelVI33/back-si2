@@ -2,6 +2,7 @@ package com.back_si2.back_si2.services;
 
 import java.util.List;
 
+import com.back_si2.back_si2.dto.order.CreateOrderDto;
 import com.back_si2.back_si2.entities.Order;
 
 public interface IOrderService {
@@ -9,7 +10,7 @@ public interface IOrderService {
 
     List<Order> findAll();
 
-    void save(Order order);
+    void createOrder(CreateOrderDto order);
 
     void deleteById(Long id);
 }

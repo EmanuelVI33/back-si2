@@ -1,4 +1,4 @@
-package com.back_si2.back_si2.controllers;
+package com.back_si2.back_si2.controllers.admin;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.back_si2.back_si2.dto.ApiResponse;
 import com.back_si2.back_si2.entities.Category;
 import com.back_si2.back_si2.services.ICategoryService;
 
@@ -19,15 +20,15 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/categories")
+@RequestMapping("/admin/categories")
 public class CategoryController {
     @Autowired
     private ICategoryService categoryService;
 
     @GetMapping()
-    public ResponseEntity<List<Category>> getAllCategories() {
-        List<Category> categories = categoryService.findAll();
-        return new ResponseEntity<>(categories, HttpStatus.OK);
+    public ResponseEntity<ApiResponse<List<Category>>> getAllCategories() {
+        ApiResponse<List<Category>> response = categoryService.findAll();
+        return ResponseEntity.status(response.getStatus()).body(response);
     }
 
     @GetMapping("/{id}")

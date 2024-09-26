@@ -9,5 +9,4 @@ public class BackSi2Application {
 	public static void main(String[] args) {
 		SpringApplication.run(BackSi2Application.class, args);
 	}
-
 }

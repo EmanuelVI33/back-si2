@@ -7,6 +7,8 @@ import com.back_si2.back_si2.entities.User;
 public interface IUserService {
     User findById(Long id);
 
+    User findByUsername(String username);
+
     List<User> findAll();
 
     void save(User user);
