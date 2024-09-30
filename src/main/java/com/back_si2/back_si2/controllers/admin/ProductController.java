@@ -3,6 +3,7 @@ package com.back_si2.back_si2.controllers.admin;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,10 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.back_si2.back_si2.dto.ApiResponse;
-import com.back_si2.back_si2.dto.product.CreateProductDto;
-import com.back_si2.back_si2.dto.product.UpdateProductDto;
 import com.back_si2.back_si2.entities.Product;
+import com.back_si2.back_si2.exception.BadRequestException;
+import com.back_si2.back_si2.exception.ResourceNotFoundException;
+import com.back_si2.back_si2.models.dto.product.ProductDto;
+import com.back_si2.back_si2.models.payloads.ResponseMessage;
 import com.back_si2.back_si2.services.IProductService;
 
 @RestController
@@ -27,56 +29,63 @@ public class ProductController {
     private IProductService productService;
 
     @GetMapping()
-    public ResponseEntity<ApiResponse<List<Product>>> getAll() {
-        ApiResponse<List<Product>> response = productService.findAll();
-        return ResponseEntity.status(response.getStatus()).body(response);
+    public ResponseEntity<?> showAll() {
+        List<Product> products = productService.findAll();
+        return new ResponseEntity<>(ResponseMessage.builder().data(products).build(), HttpStatus.OK);
     }
 
     @GetMapping("/category/{id}")
-    public ResponseEntity<ApiResponse<List<Product>>> getAllWithCategory(@PathVariable Long id) {
-        ApiResponse<List<Product>> response = productService.findByCategory(id);
-        return ResponseEntity.status(response.getStatus()).body(response);
+    public ResponseEntity<?> showAllByCategory(@PathVariable Long id) {
+        List<Product> products = productService.findByCategory(id);
+        return new ResponseEntity<>(ResponseMessage.builder().data(products).build(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getById(@PathVariable Long id) {
-        Product category = productService.findById(id);
-        if (category != null) {
-            return new ResponseEntity<>(category, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<?> showById(@PathVariable Long id) {
+        Product product = productService.findById(id);
+        return new ResponseEntity<>(ResponseMessage.builder().data(product).build(), HttpStatus.OK);
     }
 
     @PostMapping
-    public ResponseEntity<Void> create(@RequestBody CreateProductDto createProductDto) {
-        Product product = productService.dtoToEntity(createProductDto);
-        productService.save(product);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<?> create(@RequestBody ProductDto productDto) {
+        try {
+            Product product = productService.save(productDto);
+            return new ResponseEntity<>(ResponseMessage.builder().data(product).build(), HttpStatus.CREATED);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
+        }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody UpdateProductDto updateProductDto) {
-        Product existingProduct = productService.findById(id);
-        if (existingProduct != null) {
-            updateProductDto.setId(id);
-            Product product = productService.dtoToEntity(updateProductDto);
-            product.setId(id);
-            productService.save(product);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ProductDto productDto) {
+        System.out.println("Datos eviados " + id + "   " + productDto);
+        try {
+            if (productService.existsById(id)) {
+                Product product = null;
+                productDto.setId(id);
+                product = productService.save(productDto);
+                return new ResponseEntity<>(
+                        ResponseMessage.builder().data(ProductDto.builder().id(product.getId())
+                                .name(product.getName()).description(product.getDescription())
+                                .categoryId(productDto.getCategoryId()).build()).build(),
+                        HttpStatus.CREATED);
+            } else {
+                throw new ResourceNotFoundException("category", "id", id);
+            }
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
-        Product product = productService.findById(id);
-        if (product != null) {
-            productService.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        try {
+            Product productDelete = productService.findById(id);
+            productService.delete(productDelete);
+            return new ResponseEntity<>(ResponseMessage.builder().data(productDelete).build(),
+                    HttpStatus.NO_CONTENT);
+        } catch (DataAccessException e) {
+            throw new BadRequestException(e.getMessage());
         }
     }
 }

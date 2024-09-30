@@ -2,20 +2,19 @@ package com.back_si2.back_si2.services;
 
 import java.util.List;
 
-import com.back_si2.back_si2.dto.ApiResponse;
-import com.back_si2.back_si2.dto.product.CreateProductDto;
 import com.back_si2.back_si2.entities.Product;
+import com.back_si2.back_si2.models.dto.product.ProductDto;
 
 public interface IProductService {
     Product findById(Long id);
 
-    ApiResponse<List<Product>> findAll();
+    List<Product> findAll();
 
-    ApiResponse<List<Product>> findByCategory(Long id);
+    List<Product> findByCategory(Long id);
 
-    void save(Product product);
+    Product save(ProductDto productDto);
 
-    void deleteById(Long id);
+    void delete(Product id);
 
-    Product dtoToEntity(CreateProductDto productDto);
+    boolean existsById(Long id);
 }

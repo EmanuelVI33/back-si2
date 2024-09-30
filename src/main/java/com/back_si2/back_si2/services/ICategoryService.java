@@ -2,15 +2,17 @@ package com.back_si2.back_si2.services;
 
 import java.util.List;
 
-import com.back_si2.back_si2.dto.ApiResponse;
 import com.back_si2.back_si2.entities.Category;
+import com.back_si2.back_si2.models.dto.category.CategoryDto;
 
 public interface ICategoryService {
+    List<Category> findAll();
+
+    Category save(CategoryDto category);
+
     Category findById(Long id);
 
-    ApiResponse<List<Category>> findAll();
+    void delete(Category id);
 
-    void save(Category category);
-
-    void deleteById(Long id);
+    boolean existsById(Long id);
 }

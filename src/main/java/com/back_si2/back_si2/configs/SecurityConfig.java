@@ -33,17 +33,18 @@ public class SecurityConfig {
                                 .sessionManagement(sessionManager -> sessionManager
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authenticationProvider(authProvider)
-                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(jwtAuthenticationFilter,
+                                                UsernamePasswordAuthenticationFilter.class)
                                 .build();
         }
 
         @Bean
         CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.addAllowedOrigin("http://localhost:3000"); // Permitir tu frontend
-                configuration.addAllowedMethod("*"); // Permitir todos los métodos (GET, POST, etc.)
-                configuration.addAllowedHeader("*"); // Permitir todos los encabezados
-                configuration.setAllowCredentials(true); // Si estás usando cookies o autenticación
+                configuration.addAllowedOrigin("**");
+                configuration.addAllowedMethod("*");
+                configuration.addAllowedHeader("*");
+                configuration.setAllowCredentials(true);
                 UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
                 source.registerCorsConfiguration("/**", configuration);
                 return source;

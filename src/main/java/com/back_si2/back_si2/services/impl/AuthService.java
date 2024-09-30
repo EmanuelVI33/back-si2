@@ -7,12 +7,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.back_si2.back_si2.Jwt.JwtService;
-import com.back_si2.back_si2.dto.ApiResponse;
-import com.back_si2.back_si2.dto.auth.AuthResponse;
-import com.back_si2.back_si2.dto.auth.LoginDto;
-import com.back_si2.back_si2.dto.auth.RegisterDto;
 import com.back_si2.back_si2.entities.User;
 import com.back_si2.back_si2.entities.UserRol;
+import com.back_si2.back_si2.models.dto.auth.LoginDto;
+import com.back_si2.back_si2.models.dto.auth.RegisterDto;
+import com.back_si2.back_si2.models.payloads.ApiResponseV1;
+import com.back_si2.back_si2.models.payloads.AuthResponse;
 import com.back_si2.back_si2.persistence.IUserDao;
 import com.back_si2.back_si2.services.IAuthService;
 
@@ -27,7 +27,7 @@ public class AuthService implements IAuthService {
         private final AuthenticationManager authenticationManager;
 
         @Override
-        public ApiResponse<AuthResponse> login(LoginDto loginDto) {
+        public ApiResponseV1<AuthResponse> login(LoginDto loginDto) {
                 try {
                         authenticationManager
                                         .authenticate(
@@ -35,20 +35,21 @@ public class AuthService implements IAuthService {
                                                                         loginDto.getPassword()));
                         User user = userDao.findByUsername(loginDto.getUsername()).orElseThrow();
                         String token = jwtService.getToken(user);
-                        return ApiResponse.<AuthResponse>builder()
+                        return ApiResponseV1.<AuthResponse>builder()
                                         .status(200)
                                         .message("Autentificación exitosa")
-                                        .data(AuthResponse.builder().token(token).userId(user.getId()).build())
+                                        .data(AuthResponse.builder().token(token).userId(user.getId())
+                                                        .role(user.getRole()).build())
                                         .build();
 
                 } catch (AuthenticationException e) {
-                        return ApiResponse.<AuthResponse>builder()
+                        return ApiResponseV1.<AuthResponse>builder()
                                         .status(403)
                                         .success(false)
                                         .message("Credenciales inválidas")
                                         .build();
                 } catch (Exception e) {
-                        return ApiResponse.<AuthResponse>builder()
+                        return ApiResponseV1.<AuthResponse>builder()
                                         .status(500)
                                         .success(false)
                                         .message("Error interno del servidor: " + e.getMessage())
@@ -57,26 +58,28 @@ public class AuthService implements IAuthService {
         }
 
         @Override
-        public ApiResponse<AuthResponse> register(RegisterDto registerDto) {
+        public ApiResponseV1<AuthResponse> register(RegisterDto registerDto) {
                 try {
                         User user = User.builder().name(registerDto.getName()).username(registerDto.getUsername())
-                                        .password(passwordEncoder.encode(registerDto.getPassword())).role(UserRol.USER)
+                                        .password(passwordEncoder.encode(registerDto.getPassword()))
+                                        .role(registerDto.getRole())
                                         .build();
                         userDao.save(user);
                         String token = jwtService.getToken(user);
-                        return ApiResponse.<AuthResponse>builder()
+                        return ApiResponseV1.<AuthResponse>builder()
                                         .status(200)
                                         .message("Autentificación exitosa")
-                                        .data(AuthResponse.builder().token(token).userId(user.getId()).build())
+                                        .data(AuthResponse.builder().token(token).userId(user.getId())
+                                                        .role(user.getRole()).build())
                                         .build();
                 } catch (AuthenticationException e) {
-                        return ApiResponse.<AuthResponse>builder()
+                        return ApiResponseV1.<AuthResponse>builder()
                                         .status(403)
                                         .success(false)
                                         .message("Credenciales inválidas")
                                         .build();
                 } catch (Exception e) {
-                        return ApiResponse.<AuthResponse>builder()
+                        return ApiResponseV1.<AuthResponse>builder()
                                         .status(500)
                                         .success(false)
                                         .message("Error interno del servidor: " + e.getMessage())

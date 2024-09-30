@@ -1,4 +1,4 @@
-package com.back_si2.back_si2.dto.auth;
+package com.back_si2.back_si2.models.dto.category;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginDto {
-    String username;
-    String password;
+public class CategoryDto {
+    private Long id;
+    private String name;
+    private String description;
 }

@@ -1,4 +1,4 @@
-package com.back_si2.back_si2.dto;
+package com.back_si2.back_si2.models.payloads;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,13 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ApiResponse<T> {
-    @Builder.Default
-    private int status = 200;
-    @Builder.Default
-    private boolean success = true;
+public class ResponseMessage {
     @Builder.Default
     private String message = "";
-    @Builder.Default
-    private T data = null;
+    private Object data;
 }

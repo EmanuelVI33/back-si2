@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.back_si2.back_si2.dto.ApiResponse;
-import com.back_si2.back_si2.dto.product.CreateProductDto;
 import com.back_si2.back_si2.entities.Product;
+import com.back_si2.back_si2.models.dto.product.ProductDto;
 import com.back_si2.back_si2.persistence.IProductDao;
 import com.back_si2.back_si2.services.ICategoryService;
 import com.back_si2.back_si2.services.IProductService;
@@ -28,57 +27,37 @@ public class ProductService implements IProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ApiResponse<List<Product>> findAll() {
-        try {
-            List<Product> products = (List<Product>) productDao.findAll();
-            return ApiResponse.<List<Product>>builder()
-                    .data(products).build();
-        } catch (Exception e) {
-            return ApiResponse.<List<Product>>builder()
-                    .status(500)
-                    .success(false)
-                    .message("Error interno del servidor: " + e.getMessage())
-                    .build();
-        }
+    public List<Product> findAll() {
+        List<Product> products = (List<Product>) productDao.findAll();
+        return products;
     }
 
     @Override
     @Transactional
-    public void save(Product product) {
-        productDao.save(product);
+    public Product save(ProductDto productDto) {
+        var category = categoryService.findById(Long.parseLong(productDto.getCategoryId()));
+        var product = Product.builder().id(productDto.getId()).name(productDto.getName())
+                .description(productDto.getDescription())
+                .price(productDto.getPrice()).category(category).build();
+        return productDao.save(product);
     }
 
     @Override
     @Transactional
-    public void deleteById(Long id) {
-        productDao.deleteById(id);
+    public void delete(Product product) {
+        productDao.delete(product);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Product dtoToEntity(CreateProductDto productDto) {
-        Product product = new Product();
-        product.setName(productDto.getName());
-        product.setPrice(productDto.getPrice());
-        product.setDescription(productDto.getDescription());
-        product.setCategory(categoryService.findById(Long.parseLong(productDto.getCategoryId())));
-        return product;
+    public List<Product> findByCategory(Long id) {
+        List<Product> products = (List<Product>) productDao.findByCategoryId(id);
+        return products;
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public ApiResponse<List<Product>> findByCategory(Long id) {
-        try {
-            List<Product> products = (List<Product>) productDao.findByCategoryId(id);
-            return ApiResponse.<List<Product>>builder()
-                    .data(products).build();
-        } catch (Exception e) {
-            return ApiResponse.<List<Product>>builder()
-                    .status(500)
-                    .success(false)
-                    .message("Error interno del servidor: " + e.getMessage())
-                    .build();
-        }
+    public boolean existsById(Long id) {
+        return productDao.existsById(id);
     }
 
 }

@@ -1,12 +1,12 @@
 package com.back_si2.back_si2.services;
 
-import com.back_si2.back_si2.dto.ApiResponse;
-import com.back_si2.back_si2.dto.auth.AuthResponse;
-import com.back_si2.back_si2.dto.auth.LoginDto;
-import com.back_si2.back_si2.dto.auth.RegisterDto;
+import com.back_si2.back_si2.models.dto.auth.LoginDto;
+import com.back_si2.back_si2.models.dto.auth.RegisterDto;
+import com.back_si2.back_si2.models.payloads.ApiResponseV1;
+import com.back_si2.back_si2.models.payloads.AuthResponse;
 
 public interface IAuthService {
-    public ApiResponse<AuthResponse> login(LoginDto loginDto);
+    public ApiResponseV1<AuthResponse> login(LoginDto loginDto);
 
-    public ApiResponse<AuthResponse> register(RegisterDto registerDto);
+    public ApiResponseV1<AuthResponse> register(RegisterDto registerDto);
 }
