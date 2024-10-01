@@ -8,7 +8,7 @@ import lombok.Data;
 public class ProductDto {
     private Long id;
     private String name;
-    private Float price;
+    private float price;
     private String description;
     private String categoryId;
     private String imageUrl;

@@ -41,6 +41,7 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<?> create(@RequestBody CategoryDto categoryDto) {
         try {
+            System.out.println("Ingresa peticion " + categoryDto);
             Category category = categoryService.save(categoryDto);
             return new ResponseEntity<>(ResponseMessage.builder().data(category).build(), HttpStatus.CREATED);
         } catch (DataAccessException e) {
@@ -64,7 +65,8 @@ public class CategoryController {
                 category = categoryService.save(categoryDto);
                 return new ResponseEntity<>(
                         ResponseMessage.builder().data(CategoryDto.builder().id(category.getId())
-                                .name(category.getName()).description(category.getDescription()).build()).build(),
+                                .name(category.getName()).description(category.getDescription())
+                                .imageUrl(categoryDto.getImageUrl()).build()).build(),
                         HttpStatus.CREATED);
             } else {
                 throw new ResourceNotFoundException("category", "id", id);

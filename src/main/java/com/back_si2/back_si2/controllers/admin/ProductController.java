@@ -62,7 +62,11 @@ public class ProductController {
         try {
             if (productService.existsById(id)) {
                 Product product = null;
-                productDto.setId(id);
+                product = productService.findById(id);
+                // productDto.setId(id);
+                // if (productDto.getImageUrl() == null) {
+                // productDto.setImageUrl(product.getImageUrl());
+                // }
                 product = productService.save(productDto);
                 return new ResponseEntity<>(
                         ResponseMessage.builder().data(ProductDto.builder().id(product.getId())
