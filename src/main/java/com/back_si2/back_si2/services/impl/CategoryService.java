@@ -33,7 +33,7 @@ public class CategoryService implements ICategoryService {
     @Transactional
     public Category save(CategoryDto categoryDto) {
         var category = Category.builder().id(categoryDto.getId()).name(categoryDto.getName())
-                .description(categoryDto.getDescription()).build();
+                .description(categoryDto.getDescription()).imageUrl(categoryDto.getImageUrl()).build();
         return categoryDao.save(category);
     }
 

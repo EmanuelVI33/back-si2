@@ -38,7 +38,7 @@ public class ProductService implements IProductService {
         var category = categoryService.findById(Long.parseLong(productDto.getCategoryId()));
         var product = Product.builder().id(productDto.getId()).name(productDto.getName())
                 .description(productDto.getDescription())
-                .price(productDto.getPrice()).category(category).build();
+                .price(productDto.getPrice()).imageUrl(productDto.getImageUrl()).category(category).build();
         return productDao.save(product);
     }
 

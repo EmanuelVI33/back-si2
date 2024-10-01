@@ -31,6 +31,8 @@ public class Product {
     private Float price;
     @Column(name = "description", nullable = true)
     private String description;
+    @Column(name = "image_url")
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "category_id", nullable = false)
